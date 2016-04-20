@@ -23,25 +23,21 @@ public class ScamBuster extends BroadcastReceiver {
 		     Class<?> c = Class.forName(tm.getClass().getName());
 		     Method m = c.getDeclaredMethod("getITelephony");
 		     m.setAccessible(true);
-		     //com.android.internal.telephony.ITelephony telephonyService = (ITelephony) m.invoke(tm);
 
              Object telephonyService = m.invoke(tm); // Get the internal ITelephony object
 		     Bundle bundle = intent.getExtras();
 
 		     String phoneNumber = bundle.getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
-		     //Log.d("INCOMING", phoneNumber);
+
 		     if ((unwantedNumbers.contains(phoneNumber))) {
 
 		    	 Log.d("Got a phone call from :", phoneNumber);
                  Class<?> telephonyServiceClass = Class.forName(telephonyService.getClass().getName());
 
-                 //Method silenceRinger = telephonyServiceClass.getDeclaredMethod("silenceRinger");
-                 //silenceRinger.setAccessible(true);
                  Method endCall = telephonyServiceClass.getDeclaredMethod("endCall");
                  endCall.setAccessible(true);
-                 //silenceRinger.invoke(telephonyService);
                  endCall.invoke(telephonyService);
-		        Log.d("HANG UP", phoneNumber);
+		         Log.d("HANG UP", phoneNumber);
 		     }
 
 		   } catch (Exception e) {
