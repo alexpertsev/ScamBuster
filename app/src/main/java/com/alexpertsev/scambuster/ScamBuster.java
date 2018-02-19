@@ -13,35 +13,37 @@ import android.util.Log;
 
 public class ScamBuster extends BroadcastReceiver {
 
-	List<String> unwantedNumbers = Arrays.asList("+18558255331", "+18664550729", "+18555613603","+18558265904","+18007692516, +118555613603");
-	
-	@Override
-	public void onReceive(Context context, Intent intent) {
+    List<String> unwantedNumbers = Arrays.asList("+18558255331", "+18664550729", "+18555613603",
+            "+18558265904", "+18007692516", "+118555613603", "+18442357429",
+            "+18135633974");
 
-		TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-		   try {
-		     Class<?> c = Class.forName(tm.getClass().getName());
-		     Method m = c.getDeclaredMethod("getITelephony");
-		     m.setAccessible(true);
+    @Override
+    public void onReceive(Context context, Intent intent) {
 
-             Object telephonyService = m.invoke(tm); // Get the internal ITelephony object
-		     Bundle bundle = intent.getExtras();
+        TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        try {
+            Class<?> c = Class.forName(tm.getClass().getName());
+            Method m = c.getDeclaredMethod("getITelephony");
+            m.setAccessible(true);
 
-		     String phoneNumber = bundle.getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
+            Object telephonyService = m.invoke(tm); // Get the internal ITelephony object
+            Bundle bundle = intent.getExtras();
 
-		     if ((unwantedNumbers.contains(phoneNumber))) {
+            String phoneNumber = bundle.getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
 
-		    	 Log.d("Got a phone call from :", phoneNumber);
-                 Class<?> telephonyServiceClass = Class.forName(telephonyService.getClass().getName());
+            if ((unwantedNumbers.contains(phoneNumber))) {
 
-                 Method endCall = telephonyServiceClass.getDeclaredMethod("endCall");
-                 endCall.setAccessible(true);
-                 endCall.invoke(telephonyService);
-		         Log.d("HANG UP", phoneNumber);
-		     }
+                Log.d("Got a phone call from :", phoneNumber);
+                Class<?> telephonyServiceClass = Class.forName(telephonyService.getClass().getName());
 
-		   } catch (Exception e) {
-		     e.printStackTrace();
-		   }
-	}
+                Method endCall = telephonyServiceClass.getDeclaredMethod("endCall");
+                endCall.setAccessible(true);
+                endCall.invoke(telephonyService);
+                Log.d("HANG UP", phoneNumber);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
